@@ -16,7 +16,7 @@ else
 
     if [ -f delivery/FDL.apk ]
     then
-        mv -f delivery/TorrentFreebox.apk delivery/${date}_FDL.apk
+        mv -f delivery/FDL.apk delivery/${date}_FDL.apk
         if [ -e "log/build.log" ]
         then
             mv -f log/build.log log/${date}_build.log
