@@ -1,0 +1,54 @@
+current_path=`pwd`
+path_commands="`dirname \"$0\"`"
+path_commands="`( cd \"$path_commands\" && pwd )`"
+if [ -z "$path_commands" ] ; then
+    echo "Error"
+    exit 1  # fail
+else
+    date=`date '+%Y-%m-%d_%H%M%S'`
+
+    cd ${path_commands}/../
+
+    if [ ! -d log ]
+    then
+        mkdir log
+    fi
+
+    if [ -f delivery/FDL.apk ]
+    then
+        mv -f delivery/TorrentFreebox.apk delivery/${date}_FDL.apk
+        if [ -e "log/build.log" ]
+        then
+            mv -f log/build.log log/${date}_build.log
+        fi
+    fi
+
+    if [ -e "log/build.log" ]
+    then
+        rm -f log/build.log
+    fi
+
+    if [ ! -e "delivery/keystore/FDL.keystore" ]
+    then
+        mkdir -p delivery/keystore
+        cd delivery/keystore
+        keytool -genkey -v -keystore FDL.keystore -alias alias_name -keyalg RSA -keysize 2048 -validity 10000
+    fi
+
+    cd ${path_commands}/../
+
+    if [ ! -d platforms/android ]
+    then
+        ionic cordova platform add android >> log/build.log
+    fi
+
+    ionic cordova build android --release >> log/build.log
+
+    cd ${path_commands}/../platforms/android/build/outputs/apk/release
+
+    jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${path_commands}/../delivery/keystore/FDL.keystore android-release-unsigned.apk alias_name >> ${path_commands}/../log/build.log
+
+    mv -f ${path_commands}/../platforms/android/build/outputs/apk/release/android-release-unsigned.apk ${path_commands}/../delivery/FDL.apk
+fi
+
+cd $current_path

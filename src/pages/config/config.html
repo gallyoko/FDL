@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>
+      Configuration Freebox
+    </ion-title>
+    <ion-buttons right>
+      <button ion-button (click)="save()">
+        <ion-icon name="md-done-all" class="navicon" style="font-size: 30px;" ></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list>
+    <ion-list-header>Général</ion-list-header>
+    <ion-item>
+      <ion-label fixed>Dossier de téléchargement</ion-label>
+      <ion-input type="text" [(ngModel)]="downloadDirectory"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label fixed>Nb téléchargement cumulé</ion-label>
+      <ion-input type="text" [(ngModel)]="nbDownload"></ion-input>
+    </ion-item>
+  </ion-list>
+  <br>
+  <ion-list>
+    <ion-list-header>NewsGroups</ion-list-header>
+    <ion-item>
+      <ion-label fixed>Serveur url</ion-label>
+      <ion-input type="text" [(ngModel)]="server"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label fixed>Port</ion-label>
+      <ion-input type="text" [(ngModel)]="port"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label fixed>Nom utilisateur</ion-label>
+      <ion-input type="text" [(ngModel)]="username"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label fixed>Mot de passe</ion-label>
+      <ion-input type="password" [(ngModel)]="password"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Nombre de connexion</ion-label>
+      <ion-input type="text" [(ngModel)]="nbConnexion"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Réparation auto</ion-label>
+      <ion-toggle color="danger" [(ngModel)]="autoRepair"></ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-label>Extraction auto</ion-label>
+      <ion-toggle color="danger" [(ngModel)]="autoExtract"></ion-toggle>
+    </ion-item>
+  </ion-list>
+</ion-content>
