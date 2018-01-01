@@ -78,7 +78,9 @@
     </platform>
     <allow-navigation href="http://192.168.1.17:8100" />
     <engine name="android" spec="^6.4.0" />
+    <plugin name="cordova-plugin-actionsheet" spec="^2.3.3" />
     <plugin name="cordova-plugin-device" spec="^1.1.7" />
+    <plugin name="cordova-plugin-dialogs" spec="^2.0.1" />
     <plugin name="cordova-plugin-file" spec="^5.0.0" />
     <plugin name="cordova-plugin-file-opener2" spec="^2.0.19" />
     <plugin name="cordova-plugin-file-transfer" spec="^1.7.0" />
@@ -92,5 +94,4 @@
     <plugin name="cordova-plugin-x-toast" spec="^2.6.0" />
     <plugin name="cordova-sqlite-storage" spec="^2.1.4" />
     <plugin name="ionic-plugin-keyboard" spec="^2.2.1" />
-    <plugin name="cordova-plugin-actionsheet" spec="^2.3.3" />
 </widget>

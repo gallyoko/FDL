@@ -6,6 +6,7 @@ import { ISubscription } from 'rxjs/Subscription';
 import { Observable } from 'rxjs/Observable';
 import { AuthenticationPage } from '../../pages/authentication/authentication';
 import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet';
+import { Dialogs } from '@ionic-native/dialogs';
 
 @Component({
     selector: 'page-download',
@@ -24,7 +25,8 @@ export class DownloadPage {
 
     constructor(public navCtrl: NavController, private freeboxService: FreeboxService,
                 private commonService: CommonService, private actionsheetCtrl: ActionSheetController,
-                private alertCtrl: AlertController, private actionSheet: ActionSheet, private platform: Platform) {
+                private alertCtrl: AlertController, private actionSheet: ActionSheet,
+                private platform: Platform, private dialogs: Dialogs) {
         this.noDownload = false;
         this.noDownloadMessage = "";
     }
@@ -181,6 +183,26 @@ export class DownloadPage {
     }
 
     showConfirmDelete(download) {
+        if (this.platform.is('cordova')) {
+            this.showConfirmDeleteNative(download);
+        } else {
+            this.showConfirmDeleteNoNative(download);
+        }
+    }
+
+    showConfirmDeleteNative(download) {
+        this.dialogs.confirm('Confirmez-vous la suppression de "'+download.title + '" ?', 'Suppression')
+            .then((number) => {
+                if (number==1) {
+                    this.delete(download);
+                } else if (number==2) {
+                    //console.log('cancel');
+                }
+            })
+            .catch(e => console.log('Error displaying dialog', e));
+    }
+
+    showConfirmDeleteNoNative(download) {
         let confirm = this.alertCtrl.create({
             title: 'Suppression',
             message: 'Confirmez-vous la suppression de "'+download.title + '" ?',

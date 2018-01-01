@@ -3,6 +3,7 @@ import { NavController, NavParams, ActionSheetController, AlertController, Platf
 import { TorrentService } from '../../providers/torrent-service';
 import { CommonService } from '../../providers/common-service';
 import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet';
+import { Dialogs } from '@ionic-native/dialogs';
 
 @Component({
     selector: 'page-favorite',
@@ -15,7 +16,7 @@ export class FavoritePage {
 
     constructor(public navCtrl: NavController, private commonService: CommonService,
                 private actionsheetCtrl: ActionSheetController, private alertCtrl: AlertController,
-                private actionSheet: ActionSheet, private platform: Platform) {
+                private actionSheet: ActionSheet, private platform: Platform, private dialogs: Dialogs) {
 
     }
 
@@ -103,6 +104,26 @@ export class FavoritePage {
     }
 
     showConfirmDelete(title) {
+        if (this.platform.is('cordova')) {
+            this.showConfirmDeleteNative(title);
+        } else {
+            this.showConfirmDeleteNoNative(title);
+        }
+    }
+
+    showConfirmDeleteNative(title) {
+        this.dialogs.confirm('Confirmez-vous la suppression de "'+title + '" des favoris ?', 'Suppression')
+            .then((number) => {
+                    if (number==1) {
+                        this.remove(title);
+                    } else if (number==2) {
+                        //console.log('cancel');
+                    }
+            })
+            .catch(e => console.log('Error displaying dialog', e));
+    }
+
+    showConfirmDeleteNoNative(title) {
         let confirm = this.alertCtrl.create({
             title: 'Suppression',
             message: 'Confirmez-vous la suppression de "'+title+'" des favoris ?',
