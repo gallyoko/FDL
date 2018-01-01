@@ -4,5 +4,11 @@
   "type": "ionic-angular",
   "integrations": {
     "cordova": {}
-  }
+  },
+  "proxies": [
+    {
+      "path": "/v4",
+      "proxyUrl": "http://mafreebox.freebox.fr/api/v4"
+    }
+  ]
 }

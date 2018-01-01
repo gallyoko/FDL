@@ -8,6 +8,7 @@ import { File } from '@ionic-native/file';
 import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { FileOpener } from '@ionic-native/file-opener';
+
 import 'rxjs/add/operator/map';
 
 @Injectable()

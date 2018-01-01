@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { NavController, ActionSheetController, AlertController } from 'ionic-angular';
+import { NavController, ActionSheetController, AlertController, Platform } from 'ionic-angular';
 import { FreeboxService } from '../../providers/freebox-service';
 import { CommonService } from '../../providers/common-service';
 import { ISubscription } from 'rxjs/Subscription';
 import { Observable } from 'rxjs/Observable';
 import { AuthenticationPage } from '../../pages/authentication/authentication';
+import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet';
 
 @Component({
     selector: 'page-download',
@@ -23,7 +24,7 @@ export class DownloadPage {
 
     constructor(public navCtrl: NavController, private freeboxService: FreeboxService,
                 private commonService: CommonService, private actionsheetCtrl: ActionSheetController,
-                private alertCtrl: AlertController) {
+                private alertCtrl: AlertController, private actionSheet: ActionSheet, private platform: Platform) {
         this.noDownload = false;
         this.noDownloadMessage = "";
     }
@@ -96,6 +97,44 @@ export class DownloadPage {
     }
 
     openMenu(download) {
+        if (this.platform.is('cordova')) {
+            this.openMenuNative(download);
+        } else {
+            this.openMenuNoNative(download);
+        }
+    }
+
+    openMenuNative(download) {
+        let buttonLabels = [];
+        if (download.status=='stopped') {
+            buttonLabels.push('Play');
+        } else {
+            buttonLabels.push('Pause');
+        }
+        const options: ActionSheetOptions = {
+            title: download.title,
+            subtitle: 'Choose an action',
+            buttonLabels: buttonLabels,
+            addCancelButtonWithLabel: 'Cancel',
+            addDestructiveButtonWithLabel: 'Delete',
+            androidTheme: this.actionSheet.ANDROID_THEMES.THEME_HOLO_DARK,
+            destructiveButtonLast: true
+        };
+
+        this.actionSheet.show(options).then((buttonIndex: number) => {
+            if (buttonIndex==1) {
+                if (download.status=='stopped') {
+                    this.play(download);
+                } else {
+                    this.pause(download);
+                }
+            } else if (buttonIndex==2) {
+                this.showConfirmDelete(download);
+            }
+        });
+    }
+
+    openMenuNoNative(download) {
         let statusButton:any;
         if (download.status=='stopped') {
             statusButton = {

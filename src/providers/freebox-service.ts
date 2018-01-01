@@ -247,7 +247,7 @@ export class FreeboxService {
                                     let shareStatus: boolean = false;
                                     if ((entry['rx_pct'] = 10000
                                             || entry['status']=='seeding')
-                                            && (entry['rx_bytes']==entry['size'])) {
+                                        && (entry['rx_bytes']==entry['size'])) {
                                         shareStatus = true;
                                         if (entry['tx_rate'] < 1000 ) {
                                             speed = entry['tx_rate'] + ' o/s';
@@ -614,4 +614,3 @@ export class FreeboxService {
     }
 
 }
-

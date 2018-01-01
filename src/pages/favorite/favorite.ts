@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, ActionSheetController, AlertController } from 'ionic-angular';
+import { NavController, NavParams, ActionSheetController, AlertController, Platform } from 'ionic-angular';
 import { TorrentService } from '../../providers/torrent-service';
 import { CommonService } from '../../providers/common-service';
+import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet';
 
 @Component({
     selector: 'page-favorite',
@@ -13,7 +14,8 @@ export class FavoritePage {
     private favorites:any = [];
 
     constructor(public navCtrl: NavController, private commonService: CommonService,
-                private actionsheetCtrl: ActionSheetController, private alertCtrl: AlertController) {
+                private actionsheetCtrl: ActionSheetController, private alertCtrl: AlertController,
+                private actionSheet: ActionSheet, private platform: Platform) {
 
     }
 
@@ -35,6 +37,35 @@ export class FavoritePage {
     }
 
     openMenu(title) {
+        if (this.platform.is('cordova')) {
+            this.openMenuNative(title);
+        } else {
+            this.openMenuNoNative(title);
+        }
+    }
+
+    openMenuNative(title) {
+        let buttonLabels = ['Episodes'];
+        const options: ActionSheetOptions = {
+            title: title,
+            subtitle: 'Choose an action',
+            buttonLabels: buttonLabels,
+            addCancelButtonWithLabel: 'Cancel',
+            addDestructiveButtonWithLabel: 'Delete',
+            androidTheme: this.actionSheet.ANDROID_THEMES.THEME_HOLO_DARK,
+            destructiveButtonLast: true
+        };
+
+        this.actionSheet.show(options).then((buttonIndex: number) => {
+            if (buttonIndex==1) {
+                this.openNavDetailsPage(title);
+            } else if (buttonIndex==2) {
+                this.showConfirmDelete(title);
+            }
+        });
+    }
+
+    openMenuNoNative(title) {
         let actionSheet = this.actionsheetCtrl.create({
             title: title,
             cssClass: 'action-sheets-basic-page',

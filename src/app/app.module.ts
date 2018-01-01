@@ -32,6 +32,7 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
 import { FileOpener } from '@ionic-native/file-opener';
 import { NativeStorage } from '@ionic-native/native-storage';
 import { SQLite } from '@ionic-native/sqlite';
+import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet';
 
 @NgModule({
     declarations: [
@@ -78,6 +79,7 @@ import { SQLite } from '@ionic-native/sqlite';
         FileOpener,
         NativeStorage,
         SQLite,
+        ActionSheet,
         CommonService,
         FreeboxService,
         TorrentService,
