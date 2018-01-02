@@ -16,7 +16,7 @@
             <ion-select [(ngModel)]="categorySelect">
                 <ion-option *ngFor="let category of categories" value="{{category.id}}">{{category.name}}</ion-option>
             </ion-select>
-            <button ion-button color="light" clear icon-only item-end (click)="search()">
+            <button ion-button color="light" clear icon-only item-end (click)="search()" style="padding-left: 50px">
                 <ion-icon name='search' is-active="false"></ion-icon>
             </button>
         </ion-item>
