@@ -44,7 +44,7 @@ export class ConfigPage {
     }
 
     setField(data) {
-        this.downloadDirectory = data['download_dir'];
+        this.downloadDirectory = atob(data['download_dir']);
         this.nbDownload = data['max_downloading_tasks'];
         this.server = data['news']['server'];
         this.port = data['news']['port'];
@@ -61,7 +61,7 @@ export class ConfigPage {
                 this.commonService.loadingShow('Please wait...');
                 const parameters = {
                     "max_downloading_tasks": this.nbDownload,
-                    "download_dir": this.downloadDirectory,
+                    "download_dir": btoa(this.downloadDirectory),
                     "news": {
                         "user": this.username,
                         "port": this.port,

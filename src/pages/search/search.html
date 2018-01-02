@@ -35,6 +35,9 @@
       </button>
     </ion-item>
   </ion-list>
+  <div *ngIf="!torrentMode">
+    <ion-searchbar (ionInput)="getNzbTitle($event)"></ion-searchbar>
+  </div>
   <br>
   <div *ngIf="torrentMode">
     <ion-list *ngIf="categorySerie">

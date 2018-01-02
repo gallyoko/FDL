@@ -299,6 +299,67 @@ export class DatabaseService extends OrmDatabase {
         });
     }
 
+    getBinariesByCategoryAndTitle(categoryId, title) {
+        return new Promise(resolve => {
+            const binaries: any = [];
+            this.getSubCategoriesFromCategory(categoryId).then(subcategoryies => {
+                let subcategories: any = subcategoryies;
+                for(let j = 0; j < subcategories.length; j++) {
+                    const sql = 'SELECT * FROM binary WHERE subcategory_id=' + subcategories[j].id +' and title LIKE "%'+title+'%";';
+                    this.select(sql).then(dataset => {
+                        const brutDataset: any = dataset;
+                        for(let i = 0; i < brutDataset.length; i++) {
+                            let binary:any = new BinaryEntity(
+                                brutDataset[i].id,
+                                brutDataset[i].subcategory_id,
+                                brutDataset[i].title,
+                                brutDataset[i].link,
+                                new Date(brutDataset[i].pubDate),
+                                brutDataset[i].size,
+                                brutDataset[i].langue,
+                                brutDataset[i].resolution,
+                                brutDataset[i].newsgroups,
+                                brutDataset[i].filename,
+                            );
+                            binaries.push(binary);
+                        }
+                        if ((j+1) >= subcategories.length) {
+                            resolve(binaries);
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    getBinariesByTitle(title) {
+        return new Promise(resolve => {
+            const binaries: any = [];
+            const sql = 'SELECT * FROM binary WHERE title LIKE "%'+title+'%";';
+            this.select(sql).then(dataset => {
+                const brutDataset: any = dataset;
+                for(let i = 0; i < brutDataset.length; i++) {
+                    let binary:any = new BinaryEntity(
+                        brutDataset[i].id,
+                        brutDataset[i].subcategory_id,
+                        brutDataset[i].title,
+                        brutDataset[i].link,
+                        new Date(brutDataset[i].pubDate),
+                        brutDataset[i].size,
+                        brutDataset[i].langue,
+                        brutDataset[i].resolution,
+                        brutDataset[i].newsgroups,
+                        brutDataset[i].filename,
+                    );
+                    binaries.push(binary);
+                    if ((i+1) >= brutDataset.length) {
+                        resolve(binaries);
+                    }
+                }
+            });
+        });
+    }
+
     /*insertTableBinary(subcategoryId, title, link) {
         return new Promise(resolve => {
             const sql = 'INSERT INTO binary (subcategory_id, title, link) VALUES ' +

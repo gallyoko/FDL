@@ -13,7 +13,7 @@ import { CommonService } from '../../providers/common-service';
 })
 export class SearchPage {
     private categories: any;
-    private categorySelect: any = 'series';
+    private categorySelect;
     private categorySerie: any = true;
     private tvShows: any = [];
     private noResult: any = false;
@@ -118,6 +118,27 @@ export class SearchPage {
   download(torrent) {
       let filename: any = torrent.url.replace('http://www.torrents9.pe/get_torrent/','');
       this.commonService.downloadUrlFile(torrent.url, filename);
+  }
+
+  getNzbTitle(event) {
+    let val = event.target.value;
+    if (val && val.trim() != '' && val.length > 2) {
+        if (this.categorySelect) {
+            this.databaseService.getBinariesByCategoryAndTitle(this.categorySelect, val.trim()).then(dataset => {
+                if (dataset) {
+                    this.tvShows = dataset;
+                }
+            });
+        } else {
+            this.databaseService.getBinariesByTitle(val.trim()).then(dataset => {
+                if (dataset) {
+                    this.tvShows = dataset;
+                }
+            });
+        }
+    } else {
+        this.tvShows = [];
+    }
   }
 }
 
