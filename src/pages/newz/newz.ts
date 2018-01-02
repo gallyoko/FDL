@@ -11,14 +11,13 @@ import { DatabaseService } from '../../providers/database-service';
 export class NewzPage {
     private categories: any = [];
     private categorySelect: any;
+    private result: any = {};
     private resultShow: any = false;
-    private resultUpdate: any = '';
-    private resultFullCategory: any = '';
-    private resultFull: any = '';
     private countBefore: number = 0;
 
     constructor(private commonService: CommonService, private newzService: NewzService,
-                private databaseService: DatabaseService) {}
+                private databaseService: DatabaseService) {
+    }
 
     ionViewDidEnter () {
         this.categories = [];
@@ -29,6 +28,7 @@ export class NewzPage {
             if (checkBdd) {
                 this.databaseService.getCategories().then(categories => {
                     this.categories = categories;
+                    this.checkResult(true);
                 });
             } else {
                 this.commonService.toastShow('Erreur de base de données.');
@@ -57,12 +57,54 @@ export class NewzPage {
         });
     }
 
+    checkResult(before=true) {
+        this.commonService.loadingShow('Please wait...');
+        if (before) {
+            this.result = {
+                'countBefore': 0,
+                'countAfter': 0,
+                'categories': []
+            };
+            let infoCategories: any = [];
+            let countBefore: number = 0;
+            for(let i = 0; i < this.categories.length; i++) {
+                this.databaseService.getBinariesByCategory(this.categories[i].id).then(binaries => {
+                    let binariesByCategory: any = binaries;
+                    let category: any = {
+                        'id': this.categories[i].id,
+                        'title': this.categories[i].name,
+                        'countBefore': binariesByCategory.length,
+                        'countAfter': 0
+                    };
+                    countBefore = countBefore + binariesByCategory.length;
+                    infoCategories.push(category);
+                    if ((i+1) >= this.categories.length) {
+                        this.result.categories = infoCategories;
+                        this.result.countBefore = countBefore;
+                        this.commonService.loadingHide();
+                    }
+                });
+            }
+        } else {
+            let countAfter: number = 0;
+            for(let i = 0; i < this.result.categories.length; i++) {
+                this.databaseService.getBinariesByCategory(this.result.categories[i].id).then(binaries => {
+                    let binariesByCategory: any = binaries;
+                    this.result.categories[i].countAfter = binariesByCategory.length;
+                    countAfter = countAfter + binariesByCategory.length;
+                    if ((i+1) >= this.result.categories.length) {
+                        this.result.countAfter = countAfter;
+                        this.commonService.loadingHide();
+                        this.resultShow = true;
+                    }
+                });
+            }
+        }
+    }
+
     search() {
         if (this.categorySelect) {
-            this.resultShow = false;
-            this.resultUpdate = '';
-            this.resultFullCategory = '';
-            this.resultFull = '';
+            this.resultShow = false;;
             this.commonService.loadingShow('Please wait...');
             this.databaseService.getSubCategoriesFromCategory(this.categorySelect).then(dataset => {
                 if (dataset) {
@@ -107,7 +149,7 @@ export class NewzPage {
                                         filename.trim()
                                     ).then(() => {
                                         if ((j + 1) >= newzSubcategory['newz']['items'].length) {
-                                            this.showResult();
+                                            this.checkResult();
                                         }
                                     });
                                 }
@@ -119,20 +161,6 @@ export class NewzPage {
         } else {
             this.commonService.toastShow('Veuillez sélectionner une catégorie.');
         }
-    }
-
-    showResult() {
-        this.databaseService.getBinaries().then((binaries) => {
-            let allBinaries: any = binaries;
-            this.databaseService.getBinariesByCategory(this.categorySelect).then((binariesByCategory) => {
-                let allBinariesByCategory: any = binariesByCategory;
-                this.resultUpdate = (allBinariesByCategory.length - this.countBefore) + ' éléments ajoutés';
-                this.resultFullCategory = allBinariesByCategory.length + ' éléments recensés dans cette catégorie.';
-                this.resultFull = allBinaries.length + ' éléments recensés toutes catégories confondues.';
-                this.resultShow = true;
-                this.commonService.loadingHide();
-            });
-        });
     }
 
 }

@@ -21,15 +21,21 @@
             </button>
         </ion-item>
     </ion-list>
-    <ion-list>
-        <ion-item *ngIf="resultShow">
-            {{resultUpdate}}
+    <br>
+    <ion-list *ngIf="!resultShow">
+        <ion-list-header>
+            {{result.countBefore}} éléments toute catégorie
+        </ion-list-header>
+        <ion-item *ngFor="let resultCategory of result.categories">
+            {{resultCategory.countBefore}} éléments dans {{resultCategory.title}}
         </ion-item>
-        <ion-item *ngIf="resultShow">
-            {{resultFullCategory}}
-        </ion-item>
-        <ion-item *ngIf="resultShow">
-            {{resultFull}}
+    </ion-list>
+    <ion-list *ngIf="resultShow">
+        <ion-list-header>
+            {{result.countAfter}} éléments toute catégorie
+        </ion-list-header>
+        <ion-item *ngFor="let resultCategory of result.categories">
+            {{resultCategory.countAfter}} éléments dans {{resultCategory.title}}
         </ion-item>
     </ion-list>
 </ion-content>
