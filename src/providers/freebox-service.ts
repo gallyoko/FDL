@@ -16,8 +16,8 @@ export class FreeboxService {
     private routeDownloads: any;
 
     constructor(public http: HttpClient, public commonService: CommonService) {
-        this.routeApi = '/api/';
-        //this.routeApi = 'http://fwed.freeboxos.fr/api/v4/';
+        //this.routeApi = '/api/'; // => pour le dev
+        this.routeApi = 'http://mafreebox.freebox.fr/api/v4/'; // => pour la prod
         this.routeAuth = this.routeApi + 'login/authorize/';
         this.routeTracking = this.routeApi + 'login/authorize/';
         this.routeLogin = this.routeApi + 'login';
