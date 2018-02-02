@@ -21,6 +21,7 @@ import { TorrentService } from '../providers/torrent-service';
 import { NewzService } from '../providers/newz-service';
 import { NzbService } from '../providers/nzb-service';
 import { DatabaseService } from '../providers/database-service';
+import { AllocineService } from '../providers/allocine-service';
 
 import { Toast } from '@ionic-native/toast';
 import { SpinnerDialog } from '@ionic-native/spinner-dialog';
@@ -88,6 +89,7 @@ import { Dialogs } from '@ionic-native/dialogs';
         NewzService,
         NzbService,
         DatabaseService,
+        AllocineService,
         {provide: ErrorHandler, useClass: IonicErrorHandler}
     ]
 })

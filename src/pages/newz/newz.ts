@@ -104,7 +104,7 @@ export class NewzPage {
 
     search() {
         if (this.categorySelect) {
-            this.resultShow = false;;
+            this.resultShow = false;
             this.commonService.loadingShow('Please wait...');
             this.databaseService.getSubCategoriesFromCategory(this.categorySelect).then(dataset => {
                 if (dataset) {

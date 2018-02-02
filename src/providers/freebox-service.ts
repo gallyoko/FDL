@@ -7,39 +7,22 @@ import 'rxjs/add/operator/map';
 
 @Injectable()
 export class FreeboxService {
-    private routeApi: any = 'http://fwed.freeboxos.fr:8000/';
-    //private routeApi: any = 'http://192.168.1.17:8000/';
+    private routeApi: any;
     private appId: any = 'fr.gallyoko.fdl';
     private routeAuth: any;
     private routeTracking: any;
     private routeLogin: any;
     private routeLoginSession: any;
     private routeDownloads: any;
-    //private routeDownload: any;
-    private routeDownloadDelete: any;
-    private routeDownloadStatus: any;
-    private routeDownloadAddByUrl: any;
-    private routeDownloadGetConfig: any;
-    private routeDownloadUpdateConfig: any;
 
     constructor(public http: HttpClient, public commonService: CommonService) {
-        //this.routeAuth = this.routeApi + 'login/authorize/';
-        this.routeAuth = this.routeApi + 'freebox/authorization';
-        //this.routeTracking = this.routeApi + 'login/authorize';
-        this.routeTracking = this.routeApi + 'freebox/tracking/';
-        //this.routeLogin = this.routeApi + 'login';
-        this.routeLogin = this.routeApi + 'freebox/login';
-        //this.routeLoginSession = this.routeApi + 'login/session';
-        this.routeLoginSession = this.routeApi + 'freebox/login/session';
-        this.routeDownloads = this.routeApi + 'freebox/downloads';
-        //this.routeDownload = this.routeApi + 'freebox/download';
-        this.routeDownloadDelete = this.routeApi + 'freebox/download/delete';
-        this.routeDownloadStatus = this.routeApi + 'freebox/download/status';
-        this.routeDownloadAddByUrl = this.routeApi + 'freebox/download/add/url';
-        this.routeDownloadGetConfig = this.routeApi + 'freebox/newzgroup/get/config';
-        this.routeDownloadUpdateConfig = this.routeApi + 'freebox/newzgroup/update/config';
-        //this.routeDownloads = this.routeApi + 'downloads/';
-        //this.routeAirMedia = this.routeApi + 'airmedia/receivers/';
+        this.routeApi = '/api/';
+        //this.routeApi = 'http://fwed.freeboxos.fr/api/v4/';
+        this.routeAuth = this.routeApi + 'login/authorize/';
+        this.routeTracking = this.routeApi + 'login/authorize/';
+        this.routeLogin = this.routeApi + 'login';
+        this.routeLoginSession = this.routeApi + 'login/session';
+        this.routeDownloads = this.routeApi + 'downloads/';
     }
 
     auth() {
@@ -216,11 +199,14 @@ export class FreeboxService {
 
     getDownloadsGranted(tokenSession) {
         return new Promise(resolve => {
-            let request: any = {
-                "token_session": tokenSession.toString()
+            /*let request: any = {};
+            let param:any = JSON.stringify(request);*/
+            let header = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
+                .set('X-Fbx-App-Auth', tokenSession);
+            const reqOpts = {
+                headers: header
             };
-            let param:any = JSON.stringify(request);
-            this.http.post(this.routeDownloads, param)
+            this.http.get(this.routeDownloads,reqOpts)
                 .subscribe(
                     response => {
                         if (response['success']) {
@@ -376,12 +362,12 @@ export class FreeboxService {
 
     deleteDownloadGranted(id, tokenSession) {
         return new Promise(resolve => {
-            let request: any = {
-                "id": id,
-                "token_session": tokenSession.toString()
+            let header = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
+                .set('X-Fbx-App-Auth', tokenSession);
+            const reqOpts = {
+                headers: header
             };
-            let param:any = JSON.stringify(request);
-            this.http.post(this.routeDownloadDelete, param)
+            this.http.delete(this.routeDownloads + id, reqOpts)
                 .subscribe(
                     response => {
                         resolve(response);
@@ -430,13 +416,13 @@ export class FreeboxService {
 
     setStatusDownloadGranted(id, parameters, tokenSession) {
         return new Promise(resolve => {
-            let request: any = {
-                "id": id,
-                "param": parameters,
-                "token_session": tokenSession.toString()
+            let param:any = JSON.stringify(parameters);
+            let header = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
+                .set('X-Fbx-App-Auth', tokenSession);
+            const reqOpts = {
+                headers: header
             };
-            let param:any = JSON.stringify(request);
-            this.http.post(this.routeDownloadStatus, param)
+            this.http.put(this.routeDownloads + id, param, reqOpts)
                 .subscribe(
                     response => {
                         resolve(response);
@@ -469,7 +455,6 @@ export class FreeboxService {
                     });
                 } else {
                     this.challenge().then(tokenSession => {
-                        console.log(tokenSession);
                         if (tokenSession) {
                             this.addDownloadByUrlGranted(url, downloadDirectory, tokenSession).then(add => {
                                 resolve(add);
@@ -486,15 +471,13 @@ export class FreeboxService {
 
     addDownloadByUrlGranted(url, downloadDirectory, tokenSession) {
         return new Promise(resolve => {
-            let request: any = {
-                "token_session": tokenSession.toString(),
-                "param" : {
-                    "download_url": url,
-                    "download_dir": downloadDirectory
-                }
+            let header = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
+                .set('X-Fbx-App-Auth', tokenSession);
+            const reqOpts = {
+                headers: header
             };
-            let param:any = JSON.stringify(request);
-            this.http.post(this.routeDownloadAddByUrl, param)
+            let param:any = 'download_url='+url+'&download_dir='+downloadDirectory;
+            this.http.post(this.routeDownloads + 'add', param, reqOpts)
                 .subscribe(
                     response => {
                         resolve(response);
@@ -543,11 +526,12 @@ export class FreeboxService {
 
     getDownloadConfigGranted(tokenSession) {
         return new Promise(resolve => {
-            let request: any = {
-                "token_session": tokenSession.toString()
+            let header = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
+                .set('X-Fbx-App-Auth', tokenSession);
+            const reqOpts = {
+                headers: header
             };
-            let param:any = JSON.stringify(request);
-            this.http.post(this.routeDownloadGetConfig, param)
+            this.http.get(this.routeDownloads + 'config', reqOpts)
                 .subscribe(
                     response => {
                         resolve(response);
@@ -596,12 +580,13 @@ export class FreeboxService {
 
     updateDownloadConfigGranted(tokenSession, parameters) {
         return new Promise(resolve => {
-            let request: any = {
-                "token_session": tokenSession.toString(),
-                "param" : parameters
+            let header = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
+                .set('X-Fbx-App-Auth', tokenSession);
+            const reqOpts = {
+                headers: header
             };
-            let param:any = JSON.stringify(request);
-            this.http.post(this.routeDownloadUpdateConfig, param)
+            let param:any = JSON.stringify(parameters);
+            this.http.put(this.routeDownloads + 'config', param, reqOpts)
                 .subscribe(
                     response => {
                         resolve(response);

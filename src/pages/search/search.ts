@@ -76,8 +76,8 @@ export class SearchPage {
                   this.categorySerie = false;
               }
               this.torrentService.search(this.categorySelect, this.titleSearch, limit).then(tvShows => {
-                  console.log('tvShows => ');
-                  console.log(tvShows);
+                  //console.log('tvShows => ');
+                  //console.log(tvShows);
                   this.tvShows = tvShows;
                   if (this.tvShows.length == 0) {
                       this.noResult = true;

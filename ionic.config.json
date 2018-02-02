@@ -7,7 +7,7 @@
   },
   "proxies": [
     {
-      "path": "/v4",
+      "path": "/api",
       "proxyUrl": "http://mafreebox.freebox.fr/api/v4"
     }
   ]
