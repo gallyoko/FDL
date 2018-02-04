@@ -46,19 +46,5 @@ export class NewzService {
                 );
         });
     }
-
-    getReleaseTest() {
-        return new Promise(resolve => {
-            this.http.get(this.routeApiRss2Json + 'http://www.binnews.in/new_rss/cat-44.html')
-                .subscribe(
-                    response => {
-                        resolve(response);
-                    },
-                    err => {
-                        resolve(false);
-                    }
-                );
-        });
-    }
 }
 

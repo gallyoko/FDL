@@ -16,8 +16,8 @@ export class FreeboxService {
     private routeDownloads: any;
 
     constructor(public http: HttpClient, public commonService: CommonService) {
-        //this.routeApi = '/api/'; // => pour le dev
-        this.routeApi = 'http://mafreebox.freebox.fr/api/v4/'; // => pour la prod
+        this.routeApi = '/api/'; // => pour le dev
+        //this.routeApi = 'http://mafreebox.freebox.fr/api/v4/'; // => pour la prod
         this.routeAuth = this.routeApi + 'login/authorize/';
         this.routeTracking = this.routeApi + 'login/authorize/';
         this.routeLogin = this.routeApi + 'login';
@@ -30,7 +30,7 @@ export class FreeboxService {
             let request: any = {
                 "app_id": this.appId,
                 "app_name": "FDL",
-                "app_version": "0.0.1",
+                "app_version": "1.0a",
                 "device_name": "Gally"
             };
             let param:any = JSON.stringify(request);
@@ -597,5 +597,110 @@ export class FreeboxService {
                 );
         });
     }
+
+    addDownloadByUpload(url, downloadDirectory) {
+        return new Promise(resolve => {
+            this.commonService.getTokenSession().then(tokenSession => {
+                if (tokenSession) {
+                    this.addDownloadByUploadGranted(url, downloadDirectory, tokenSession).then(add => {
+                        if (!add['success']) {
+                            this.challenge().then(tokenSession => {
+                                if (tokenSession) {
+                                    this.addDownloadByUploadGranted(url, downloadDirectory, tokenSession).then(add => {
+                                        resolve(add);
+                                    });
+                                } else {
+                                    resolve({'success': false});
+                                }
+                            });
+                        } else {
+                            resolve(add);
+                        }
+                    });
+                } else {
+                    this.challenge().then(tokenSession => {
+                        if (tokenSession) {
+                            this.addDownloadByUploadGranted(url, downloadDirectory, tokenSession).then(add => {
+                                resolve(add);
+                            });
+                        } else {
+                            resolve({'success': false});
+                        }
+                    });
+                }
+            });
+
+        });
+    }
+
+    addDownloadByUploadGranted(url, downloadDirectory, tokenSession) {
+        return new Promise(resolve => {
+            var route = this.routeDownloads;
+            var xhr = new XMLHttpRequest();
+            xhr.responseType = "blob";
+            xhr.onload = function()
+            {
+                let formData: FormData = new FormData();
+                formData.append("download_dir", downloadDirectory);
+                formData.append("archive_password",'');
+                let torrent: File = new File([xhr.response], 'le-redoutable-french-dvdrip-2018.torrent', {type: "application/x-bittorrent"});
+                formData.append("download_file", torrent, 'le-redoutable-french-dvdrip-2018.torrent');
+                var x = new XMLHttpRequest();
+                x.open("POST",route + 'add/',true);
+                x.setRequestHeader("Content-type", "multipart/form-data");
+                x.setRequestHeader("X-Fbx-App-Auth", tokenSession);
+                x.send(formData);
+            }
+            xhr.open("GET", url);
+            xhr.send();
+        });
+    }
+
+    /*addDownloadByUploadGranted(url, downloadDirectory, tokenSession) {
+        return new Promise(resolve => {
+            console.log('ok1');
+            var http = this.http;
+            var route = this.routeDownloads;
+            var blob = null;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", url);
+            xhr.responseType = "blob";//force the HTTP response, response-type header to be blob
+            xhr.onload = function()
+            {
+                blob = xhr.response;//xhr.response is now a blob object
+                let reader = new FileReader();
+                reader.readAsText(blob);
+                reader.onload = () => {
+                    let header = new HttpHeaders().set('Content-Type', 'multipart/form-data')
+                        .set('X-Fbx-App-Auth', tokenSession);
+                    const reqOpts = {
+                        headers: header
+                    };
+                    let formData: FormData = new FormData();
+                    formData.set("download_dir", downloadDirectory);
+
+                    formData.set("download_file", reader.result, 'hope.torrent');
+
+                    formData.append("download_file", reader.result, 'hope.torrent');
+
+                    //let blob2 = new Blob([buffer], { type: 'application/x-bittorrent' });
+
+                    http.post(route + 'add', formData, reqOpts)
+                        .subscribe(
+                            response => {
+                                resolve(response);
+                            },
+                            err => {
+                                console.log('ko2');
+                                console.log(err);
+                                resolve({'success': false});
+                            }
+                        );
+                };
+            }
+            xhr.send();
+
+        });
+    }*/
 
 }

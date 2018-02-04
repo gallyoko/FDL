@@ -178,7 +178,12 @@ export class NavigationDetailsFavoritePage {
     }
 
     download(torrent) {
-        let filename: any = torrent.url.replace('http://www.torrents9.pe/get_torrent/','');
-        this.commonService.downloadUrlFile(torrent.url, filename);
+        this.commonService.loadingShow('Please wait...');
+        this.torrentService.getUrlTorrent(torrent.url).then(url => {
+            let filenameTemp: any = url.toString().split('/');
+            let filename: any = filenameTemp.reverse()[0];
+            this.commonService.downloadUrlFile(url.toString(), filename);
+            this.commonService.loadingHide();
+        });
     }
 }

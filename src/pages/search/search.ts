@@ -30,7 +30,28 @@ export class SearchPage {
   ionViewDidEnter () {
       this.commonService.loadingShow('Please wait...');
       this.loadCategories();
+      //this.downloadTest();
   }
+
+    /*downloadTest () {
+        this.commonService.loadingShow('Please wait...');
+        //let url: any = '/torrent/le-redoutable-french-dvdrip-2018.torrent';
+        let url: any = 'http://www.torrent9.bz/get_torrent/le-redoutable-french-dvdrip-2018.torrent';
+        this.freeboxService.addDownloadByUpload(url, 'L0Rpc3F1ZSBkdXIvVMOpbMOpY2hhcmdlbWVudHMv').then(response => {
+            if (response) {
+                let data: any = response;
+                if (data.success) {
+                    this.commonService.toastShow("Le téléchargement a été ajouté..");
+                } else {
+                    console.log(JSON.stringify(data));
+                    this.commonService.toastShow("Erreur : impossible d'ajouter le NZB à la freebox.");
+                }
+            } else {
+                this.commonService.toastShow("Erreur interne : impossible d'ajouter le NZB à la freebox.");
+            }
+            this.commonService.loadingHide();
+        });
+    }*/
 
   onChangeMode() {
       this.commonService.loadingShow('Please wait...');
@@ -76,8 +97,6 @@ export class SearchPage {
                   this.categorySerie = false;
               }
               this.torrentService.search(this.categorySelect, this.titleSearch, limit).then(tvShows => {
-                  //console.log('tvShows => ');
-                  //console.log(tvShows);
                   this.tvShows = tvShows;
                   if (this.tvShows.length == 0) {
                       this.noResult = true;
@@ -116,7 +135,7 @@ export class SearchPage {
   }
 
   download(torrent) {
-      let filename: any = torrent.url.replace('http://www.torrents9.pe/get_torrent/','');
+      let filename: any = torrent.url.replace('http://www.torrents9.bz/get_torrent/','');
       this.commonService.downloadUrlFile(torrent.url, filename);
   }
 
@@ -144,13 +163,13 @@ export class SearchPage {
 
 @Component({
     templateUrl: 'tv-show.html',
-    providers: [CommonService]
+    providers: [CommonService, TorrentService]
 })
 export class NavigationDetailsSearchPage {
     private tvShow:any;
     private titleIsFavorite:any = false;
 
-    constructor(private params: NavParams, private commonService: CommonService) {
+    constructor(private params: NavParams, private commonService: CommonService, private torrentService: TorrentService) {
         this.tvShow = this.params.data.tvShow;
         this.checkTitle();
     }
@@ -174,8 +193,13 @@ export class NavigationDetailsSearchPage {
     }
 
     download(torrent) {
-        let filename: any = torrent.url.replace('http://www.torrents9.pe/get_torrent/','');
-        this.commonService.downloadUrlFile(torrent.url, filename);
+        this.commonService.loadingShow('Please wait...');
+        this.torrentService.getUrlTorrent(torrent.url).then(url => {
+            let filenameTemp: any = url.toString().split('/');
+            let filename: any = filenameTemp.reverse()[0];
+            this.commonService.downloadUrlFile(url, filename);
+            this.commonService.loadingHide();
+        });
     }
 }
 

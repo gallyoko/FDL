@@ -9,6 +9,18 @@
     {
       "path": "/api",
       "proxyUrl": "http://mafreebox.freebox.fr/api/v4"
+    },
+    {
+      "path": "/dl_torrent",
+      "proxyUrl": "http://www.torrent9.bz/get_torrent"
+    },
+    {
+      "path": "/api_torrent",
+      "proxyUrl": "http://www.torrent9.bz"
+    },
+    {
+      "path": "/torrent_api",
+      "proxyUrl": "http://www.torrents9.pe"
     }
   ]
 }
